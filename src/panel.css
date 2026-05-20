@@ -28,7 +28,7 @@
   all: initial;
   position: absolute;
   z-index: 2147483647;
-  width: 320px;
+  width: 340px;
   max-height: 480px;
   overflow: auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -118,12 +118,49 @@
   word-break: break-word;
 }
 
-#ctxvocab-panel .ctxvocab-actions {
-  display: flex;
-  gap: 8px;
+#ctxvocab-panel .ctxvocab-dicts {
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid #2a2a44;
+}
+
+#ctxvocab-panel .ctxvocab-dicts-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #7c83fd;
+  margin-bottom: 6px;
+}
+
+#ctxvocab-panel .ctxvocab-dicts-row {
+  display: flex;
+  gap: 6px;
+}
+
+#ctxvocab-panel .ctxvocab-link {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  font-size: 12px;
+  color: #cfd2ff;
+  background: #232347;
+  border: 1px solid #2a2a44;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+#ctxvocab-panel .ctxvocab-link:hover {
+  background: #2a2a55;
+  border-color: #7c83fd;
+  color: #ffffff;
+}
+
+#ctxvocab-panel .ctxvocab-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 #ctxvocab-panel .ctxvocab-btn {

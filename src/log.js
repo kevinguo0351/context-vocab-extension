@@ -24,7 +24,7 @@ function formatDate(iso) {
 
 function render(entries) {
   if (!entries.length) {
-    $list.innerHTML = `<div class="empty">No saved words yet. Select a word on any webpage and click ✦ Look up.</div>`;
+    $list.innerHTML = `<div class="empty">还没有存过词。在任意网页选中一个词，点 ✦ 查词 即可。</div>`;
     return;
   }
   $list.innerHTML = entries.map(e => `
@@ -34,8 +34,8 @@ function render(entries) {
         <div class="when">${escapeHtml(formatDate(e.saved_at))}</div>
       </div>
       ${e.meaning ? `<div class="meaning">${escapeHtml(e.meaning)}</div>` : ""}
-      ${e.in_context ? `<div class="label">IN THIS CONTEXT</div><div class="meaning">${escapeHtml(e.in_context)}</div>` : ""}
-      ${e.context ? `<div class="label">PASSAGE</div><div class="ctx">${escapeHtml(e.context)}</div>` : ""}
+      ${e.in_context ? `<div class="label">此处含义</div><div class="meaning">${escapeHtml(e.in_context)}</div>` : ""}
+      ${e.context ? `<div class="label">原文</div><div class="ctx">${escapeHtml(e.context)}</div>` : ""}
       ${e.source_url ? `<div class="src"><a href="${escapeHtml(e.source_url)}" target="_blank" rel="noopener">${escapeHtml(e.source_title || e.source_url)}</a></div>` : ""}
     </div>
   `).join("");
@@ -57,7 +57,7 @@ function applyFilter() {
 async function load() {
   const { word_log } = await chrome.storage.local.get("word_log");
   allEntries = Array.isArray(word_log) ? word_log : [];
-  $count.textContent = `${allEntries.length} ${allEntries.length === 1 ? "entry" : "entries"}`;
+  $count.textContent = `共 ${allEntries.length} 条`;
   render(allEntries);
 }
 
@@ -74,7 +74,7 @@ $export.addEventListener("click", () => {
 });
 
 $clear.addEventListener("click", async () => {
-  if (!confirm("Clear the entire word log? This cannot be undone.")) return;
+  if (!confirm("确定清空整个语境档案？此操作不可恢复。")) return;
   await chrome.storage.local.remove("word_log");
   await load();
 });

@@ -20,11 +20,11 @@ document.getElementById("log").addEventListener("click", () => {
 
   if (resp.deepseek_configured) {
     dsDot.className = "dot ok";
-    dsLabel.textContent = "Configured";
+    dsLabel.textContent = "已配置";
   }
   if (resp.eudic_configured) {
     euDot.className = "dot ok";
-    euLabel.textContent = "Configured";
+    euLabel.textContent = "已配置";
   }
   document.getElementById("saves").textContent = String(resp.saves_total || 0);
 })();

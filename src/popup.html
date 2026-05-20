@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <title>Context Vocab</title>
@@ -7,7 +7,7 @@
     body {
       margin: 0;
       width: 280px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       background: #1a1a2e;
       color: #e0e0e0;
       padding: 14px 16px;
@@ -19,11 +19,7 @@
       justify-content: space-between;
       align-items: baseline;
     }
-    .version {
-      font-size: 11px;
-      color: #9a9ab0;
-      font-weight: 400;
-    }
+    .version { font-size: 11px; color: #9a9ab0; font-weight: 400; }
     .status {
       margin-top: 12px;
       font-size: 12px;
@@ -31,15 +27,10 @@
       flex-direction: column;
       gap: 4px;
     }
-    .status .row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
+    .status .row { display: flex; justify-content: space-between; gap: 8px; }
     .dot {
       display: inline-block;
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       margin-right: 6px;
       vertical-align: middle;
@@ -54,11 +45,7 @@
       color: #9a9ab0;
     }
     .count strong { color: #e0e0e0; }
-    .links {
-      margin-top: 12px;
-      display: flex;
-      gap: 8px;
-    }
+    .links { margin-top: 12px; display: flex; gap: 8px; }
     .links button {
       flex: 1;
       background: #232347;
@@ -78,13 +65,13 @@
     <span class="version" id="version"></span>
   </div>
   <div class="status">
-    <div class="row"><span><span id="ds_dot" class="dot miss"></span>DeepSeek API key</span><span id="ds_label">Not set</span></div>
-    <div class="row"><span><span id="eu_dot" class="dot miss"></span>Eudic token</span><span id="eu_label">Not set</span></div>
+    <div class="row"><span><span id="ds_dot" class="dot miss"></span>DeepSeek API key</span><span id="ds_label">未设置</span></div>
+    <div class="row"><span><span id="eu_dot" class="dot miss"></span>欧陆 token</span><span id="eu_label">未设置</span></div>
   </div>
-  <div class="count">Words saved (total): <strong id="saves">0</strong></div>
+  <div class="count">累计已存：<strong id="saves">0</strong> 个词</div>
   <div class="links">
-    <button id="settings">Settings</button>
-    <button id="log">View Log</button>
+    <button id="settings">设置</button>
+    <button id="log">查看语境档案</button>
   </div>
   <script src="popup.js"></script>
 </body>

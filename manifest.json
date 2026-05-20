@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Context Vocab",
-  "version": "1.0.0",
-  "description": "Select any word on any webpage; AI explains it using surrounding context and saves it to Eudic with full provenance.",
+  "version": "1.1.0",
+  "description": "在任何网页划词，AI 结合上下文给出中文解释，一键存入欧陆词典并附带语境笔记。",
   "author": "Context Vocab",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [

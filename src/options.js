@@ -23,14 +23,14 @@ $save.addEventListener("click", async () => {
     deepseek_key: $ds.value.trim(),
     eudic_token: $eu.value.trim()
   });
-  flashStatus("Saved.");
+  flashStatus("已保存。");
 });
 
 $clear.addEventListener("click", async () => {
   await chrome.storage.local.remove(["deepseek_key", "eudic_token"]);
   $ds.value = "";
   $eu.value = "";
-  flashStatus("Cleared.");
+  flashStatus("已清除。");
 });
 
 load();
