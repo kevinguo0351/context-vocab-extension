@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Context Vocab</title>
+  <style>
+    body {
+      margin: 0;
+      width: 280px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      padding: 14px 16px;
+    }
+    .title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .version {
+      font-size: 11px;
+      color: #9a9ab0;
+      font-weight: 400;
+    }
+    .status {
+      margin-top: 12px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .status .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .ok { background: #3da66f; }
+    .miss { background: #ff8a8a; }
+    .count {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #2a2a44;
+      font-size: 12px;
+      color: #9a9ab0;
+    }
+    .count strong { color: #e0e0e0; }
+    .links {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    .links button {
+      flex: 1;
+      background: #232347;
+      color: #e0e0e0;
+      border: 1px solid #2a2a44;
+      border-radius: 6px;
+      padding: 7px 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .links button:hover { background: #2a2a55; border-color: #7c83fd; }
+  </style>
+</head>
+<body>
+  <div class="title">
+    Context Vocab
+    <span class="version" id="version"></span>
+  </div>
+  <div class="status">
+    <div class="row"><span><span id="ds_dot" class="dot miss"></span>DeepSeek API key</span><span id="ds_label">Not set</span></div>
+    <div class="row"><span><span id="eu_dot" class="dot miss"></span>Eudic token</span><span id="eu_label">Not set</span></div>
+  </div>
+  <div class="count">Words saved (total): <strong id="saves">0</strong></div>
+  <div class="links">
+    <button id="settings">Settings</button>
+    <button id="log">View Log</button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

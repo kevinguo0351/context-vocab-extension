@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Context Vocab — Word Log</title>
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --bg-2: #232347;
+      --border: #2a2a44;
+      --text: #e0e0e0;
+      --muted: #9a9ab0;
+      --accent: #7c83fd;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 32px 24px 64px;
+    }
+    .wrap { max-width: 880px; margin: 0 auto; }
+    header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0; font-size: 22px; }
+    .count { color: var(--muted); font-size: 13px; }
+    .actions { margin-left: auto; display: flex; gap: 8px; }
+    button {
+      background: var(--bg-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+    button.danger:hover { border-color: #ff8a8a; color: #ff8a8a; }
+    input.search {
+      width: 280px;
+      background: var(--bg-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+    .entry {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .entry .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .entry .word {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .entry .when {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .entry .meaning { margin-top: 4px; }
+    .entry .label {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      font-weight: 700;
+      margin-top: 8px;
+    }
+    .entry .ctx {
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
+      border-left: 2px solid var(--border);
+      padding-left: 10px;
+      margin-top: 4px;
+    }
+    .entry .src {
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    .entry .src a {
+      color: var(--accent);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .entry .src a:hover { text-decoration: underline; }
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 60px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Word Log</h1>
+      <span class="count" id="count"></span>
+      <div class="actions">
+        <input id="search" class="search" type="search" placeholder="Search word, context, source…">
+        <button id="export" type="button">Export JSON</button>
+        <button id="clear" class="danger" type="button">Clear log</button>
+      </div>
+    </header>
+    <div id="list"></div>
+  </div>
+  <script src="log.js"></script>
+</body>
+</html>
