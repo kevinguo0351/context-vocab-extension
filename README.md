@@ -64,7 +64,7 @@ AI 看到上下文后告诉你：
 
 | 配置项 | 在哪儿拿 | 备注 |
 |---|---|---|
-| **DeepSeek API Key** | https://platform.deepseek.com/ | 按量付费，一次查词 ≈ ¥0.003。比欧陆的 AI 会员便宜一个数量级 |
+| **DeepSeek API Key** | https://platform.deepseek.com/ | 按量付费，**用 `deepseek-v4-flash`**（DeepSeek 最便宜的模型），一次查词 ≈ ¥0.0007。比欧陆的 AI 会员便宜两个数量级 |
 | **欧陆 OpenAPI Token** | https://my.eudic.net/OpenAPI/Authorization | 免费（欧陆账号自带）。**注意：粘贴原始 token，不要带 `Bearer` 前缀**，否则会 401 |
 
 > 🔒 两个 key 都只存在你浏览器本地（`chrome.storage.local`），不上传任何服务器。这个插件**没有后端**——你查的词只去 DeepSeek，存的词只去欧陆，别的哪都不去。详见 [PRIVACY.md](PRIVACY.md)。
@@ -94,7 +94,7 @@ AI 看到上下文后告诉你：
 ## 技术栈（给好奇的同学）
 
 - Chrome Manifest V3（合规上架前提）
-- DeepSeek V3 (`deepseek-chat`)：上下文窗口前后约 300 字，中文输出
+- DeepSeek `deepseek-v4-flash`（最便宜的模型，$0.14/M input · $0.28/M output）：上下文窗口前后约 300 字，中文输出
 - 欧陆 OpenAPI (`api.frdic.com/api/open/v1`)：先 `POST /studylist/word` 加词，再 `POST /studylist/note` 把 AI 解释 + 原文作为笔记附在词条上（注意：注释字段叫 `note`，不是 `context_line`，这点 v1.1.0 踩过坑，v1.1.1 修复）
 - 朗文 / 韦氏 / 剑桥词典：网页 deep-link，无需 API（除韦氏有免费 API 外，朗文剑桥都收费）
 - `chrome.storage.local`：API key + 本地语境档案

@@ -81,7 +81,11 @@ async function callDeepSeek({ word, context, url }) {
         Authorization: `Bearer ${deepseek_key}`
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
+        // Cheapest model in the DeepSeek lineup ($0.14/M input cache-miss,
+        // $0.28/M output; cache-hit drops input to $0.0028/M). Legacy
+        // `deepseek-chat` routes here too but is scheduled for deprecation
+        // on 2026-07-24, so we pin the explicit ID.
+        model: "deepseek-v4-flash",
         max_tokens: 500,
         temperature: 0.3,
         messages: [
