@@ -81,13 +81,21 @@ AI 看到上下文后告诉你：
    - 点 **＋ 存到欧陆（带语境）** → 单词进入生词本，AI 解释 + 原文段落自动作为笔记附在词条上
 5. 想复习时，点工具栏图标 → **查看语境档案**，所有存过的词连同当时的世界都在那
 
+### 📤 导出语境档案
+
+档案页右上角三个按钮，导成什么样取决于你下一步想干嘛：
+
+- **JSON** —— 完整结构化数据，每条记录所有字段都在，方便自己写脚本处理
+- **CSV** —— 单词、释义、此处含义、原文、来源……每一项独立一列，导入 Excel / Notion / 飞书都很顺。带 UTF-8 BOM，Windows Excel 直接打开不乱码
+- **Anki** —— 专门为 Anki 准备的 .txt（TSV）。**Front = 单词**，**Back = HTML 格式的释义 + 此处含义 + 原文（自动加粗目标词）+ 来源链接**，**Tags = `context-vocab`**。文件头自带 `#separator:tab` `#html:true` `#columns:Word\tBack\tTags`，新版 Anki 一键导入即可。具体步骤导出后会弹出说明
+
 ---
 
 ## 技术栈（给好奇的同学）
 
 - Chrome Manifest V3（合规上架前提）
 - DeepSeek V3 (`deepseek-chat`)：上下文窗口前后约 300 字，中文输出
-- 欧陆 OpenAPI (`api.frdic.com/api/open/v1`)：单词写入生词本，**`context_line` 字段** 携带 AI 解释 + 原文作为笔记
+- 欧陆 OpenAPI (`api.frdic.com/api/open/v1`)：先 `POST /studylist/word` 加词，再 `POST /studylist/note` 把 AI 解释 + 原文作为笔记附在词条上（注意：注释字段叫 `note`，不是 `context_line`，这点 v1.1.0 踩过坑，v1.1.1 修复）
 - 朗文 / 韦氏 / 剑桥词典：网页 deep-link，无需 API（除韦氏有免费 API 外，朗文剑桥都收费）
 - `chrome.storage.local`：API key + 本地语境档案
 - 没有打包步骤、没有 npm 依赖、纯原生 JS —— 改起来心智负担为零 🪶

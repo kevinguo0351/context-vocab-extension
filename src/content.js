@@ -165,7 +165,10 @@
 
     panel.innerHTML = `
       <div class="ctxvocab-header">
-        <div class="ctxvocab-word" title="${escapeHtml(data.word)}">${escapeHtml(data.word)}</div>
+        <div class="ctxvocab-word-row">
+          <div class="ctxvocab-word" title="${escapeHtml(data.word)}">${escapeHtml(data.word)}</div>
+          <span class="ctxvocab-type-pill" hidden></span>
+        </div>
         <button class="ctxvocab-close" type="button" aria-label="关闭">×</button>
       </div>
       <div class="ctxvocab-body">
@@ -174,13 +177,13 @@
       <div class="ctxvocab-dicts" hidden>
         <div class="ctxvocab-dicts-label">查阅外部词典</div>
         <div class="ctxvocab-dicts-row">
-          <a class="ctxvocab-link" data-dict="ldoce" target="_blank" rel="noopener">朗文</a>
-          <a class="ctxvocab-link" data-dict="mw" target="_blank" rel="noopener">韦氏</a>
-          <a class="ctxvocab-link" data-dict="cambridge" target="_blank" rel="noopener">剑桥</a>
+          <a class="ctxvocab-link" data-dict="ldoce" target="_blank" rel="noopener">朗文 LDOCE</a>
+          <a class="ctxvocab-link" data-dict="mw" target="_blank" rel="noopener">韦氏 M-W</a>
+          <a class="ctxvocab-link" data-dict="cambridge" target="_blank" rel="noopener">剑桥 英汉</a>
         </div>
       </div>
       <div class="ctxvocab-actions" hidden>
-        <button class="ctxvocab-btn ctxvocab-save" type="button">＋ 存到欧陆（带语境）</button>
+        <button class="ctxvocab-btn ctxvocab-save" type="button">＋ 存到欧陆（带语境笔记）</button>
       </div>
       <div class="ctxvocab-status" hidden></div>
     `;
@@ -217,25 +220,25 @@
     const type = parsed.type || "";
     const note = parsed.note || "";
 
+    if (type) {
+      const pill = panel.querySelector(".ctxvocab-type-pill");
+      pill.textContent = type;
+      pill.hidden = false;
+    }
+
     body.innerHTML = `
-      <div class="ctxvocab-section">
-        <div class="ctxvocab-label">释义</div>
-        <div class="ctxvocab-text">${escapeHtml(meaning)}</div>
+      <div class="ctxvocab-meaning">
+        <div class="ctxvocab-meaning-text">${escapeHtml(meaning)}</div>
       </div>
       ${inContext ? `
-      <div class="ctxvocab-section">
-        <div class="ctxvocab-label">此处含义</div>
-        <div class="ctxvocab-text">${escapeHtml(inContext)}</div>
-      </div>` : ""}
-      ${type ? `
-      <div class="ctxvocab-section">
-        <div class="ctxvocab-label">词性</div>
-        <div class="ctxvocab-text">${escapeHtml(type)}</div>
+      <div class="ctxvocab-callout">
+        <div class="ctxvocab-callout-label">在这段里的意思</div>
+        <div class="ctxvocab-callout-text">${escapeHtml(inContext)}</div>
       </div>` : ""}
       ${note ? `
-      <div class="ctxvocab-section">
-        <div class="ctxvocab-label">备注</div>
-        <div class="ctxvocab-text">${escapeHtml(note)}</div>
+      <div class="ctxvocab-note">
+        <span class="ctxvocab-note-icon">💡</span>
+        <span class="ctxvocab-note-text">${escapeHtml(note)}</span>
       </div>` : ""}
     `;
 

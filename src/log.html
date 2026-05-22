@@ -30,7 +30,26 @@
     }
     h1 { margin: 0; font-size: 22px; }
     .count { color: var(--muted); font-size: 13px; }
-    .actions { margin-left: auto; display: flex; gap: 8px; }
+    .actions { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .export-group {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg-2);
+    }
+    .export-group button {
+      border: none;
+      border-radius: 0;
+      padding: 7px 12px;
+      font-size: 12px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      border-right: 1px solid var(--border);
+    }
+    .export-group button:last-child { border-right: none; }
+    .export-group button:hover { background: #2a2a55; color: #ffffff; }
     button {
       background: var(--bg-2);
       color: var(--text);
@@ -95,8 +114,12 @@
       <span class="count" id="count"></span>
       <div class="actions">
         <input id="search" class="search" type="search" placeholder="搜索单词、语境、来源…">
-        <button id="export" type="button">导出 JSON</button>
-        <button id="clear" class="danger" type="button">清空档案</button>
+        <div class="export-group">
+          <button id="export-json" type="button" title="完整结构化数据">JSON</button>
+          <button id="export-csv" type="button" title="单词与释义分列，方便导入 Excel/Notion">CSV</button>
+          <button id="export-anki" type="button" title="生成 Anki 可直接导入的 TSV 文件">Anki</button>
+        </div>
+        <button id="clear" class="danger" type="button">清空</button>
       </div>
     </header>
     <div id="list"></div>

@@ -51,17 +51,39 @@
 #ctxvocab-panel .ctxvocab-header {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#ctxvocab-panel .ctxvocab-word-row {
+  display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 #ctxvocab-panel .ctxvocab-word {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #ffffff;
+  letter-spacing: 0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#ctxvocab-panel .ctxvocab-type-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #cfd2ff;
+  background: rgba(124, 131, 253, 0.15);
+  border: 1px solid rgba(124, 131, 253, 0.4);
+  border-radius: 999px;
+  padding: 2px 9px;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -83,7 +105,70 @@
 #ctxvocab-panel .ctxvocab-body {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+/* Primary: dictionary-style short definition */
+#ctxvocab-panel .ctxvocab-meaning {
+  background: linear-gradient(180deg, #232347 0%, #1f1f3d 100%);
+  border-radius: 8px;
+  padding: 12px 14px;
+  border-left: 3px solid #7c83fd;
+}
+
+#ctxvocab-panel .ctxvocab-meaning-text {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+/* Highlighted callout: in-context meaning */
+#ctxvocab-panel .ctxvocab-callout {
+  background: rgba(124, 131, 253, 0.08);
+  border: 1px solid rgba(124, 131, 253, 0.25);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+#ctxvocab-panel .ctxvocab-callout-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #9ea4ff;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+#ctxvocab-panel .ctxvocab-callout-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #e6e7ff;
+  word-break: break-word;
+}
+
+/* Footnote-style memory tip */
+#ctxvocab-panel .ctxvocab-note {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 12px;
+  color: #b6b8c8;
+  padding: 4px 2px 0;
+  border-top: 1px dashed #2a2a44;
+  padding-top: 10px;
+}
+
+#ctxvocab-panel .ctxvocab-note-icon {
+  flex-shrink: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+#ctxvocab-panel .ctxvocab-note-text {
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 #ctxvocab-panel .ctxvocab-loading {
@@ -98,24 +183,6 @@
   border: 1px solid #5a2a34;
   border-radius: 6px;
   padding: 8px 10px;
-}
-
-#ctxvocab-panel .ctxvocab-section {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-#ctxvocab-panel .ctxvocab-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #7c83fd;
-}
-
-#ctxvocab-panel .ctxvocab-text {
-  color: #e0e0e0;
-  word-break: break-word;
 }
 
 #ctxvocab-panel .ctxvocab-dicts {
@@ -160,7 +227,19 @@
 #ctxvocab-panel .ctxvocab-actions {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
+}
+
+#ctxvocab-panel .ctxvocab-btn.ctxvocab-save {
+  font-weight: 600;
+  background: #2a2a55;
+  color: #ffffff;
+  border-color: #3d3d77;
+}
+
+#ctxvocab-panel .ctxvocab-btn.ctxvocab-save:hover:not([disabled]) {
+  background: #34346a;
+  border-color: #7c83fd;
 }
 
 #ctxvocab-panel .ctxvocab-btn {
