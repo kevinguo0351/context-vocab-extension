@@ -350,6 +350,7 @@
       return;
     }
     removeButton();
+    removePanel();
   });
 
   document.addEventListener("keydown", (e) => {
