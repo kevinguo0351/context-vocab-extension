@@ -9,3 +9,7 @@ Thumbs.db
 dist/
 *.zip
 secrets.json
+
+# Portable mode output (contains your API keys in plaintext)
+context-vocab-portable.zip
+*.portable.zip

@@ -1,0 +1,5 @@
+{
+  "_comment": "Portable mode preset. Leave empty in git. Fill in via make-portable.ps1 only when building a portable zip. Anyone with a filled-in copy of this file has full access to your DeepSeek and Eudic accounts.",
+  "deepseek_key": "",
+  "eudic_token": ""
+}

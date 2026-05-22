@@ -46,6 +46,45 @@ AI 看到上下文后告诉你：
 
 ---
 
+## 🎒 便携模式（公用电脑神器）
+
+> 适用场景：你是大学生，经常在图书馆、机房、宿舍楼下打印店等公用电脑上写作业、查资料。每次都重新填两个 API key 太烦——这个模式让你把 key **预先打包进 zip**，到目的地解压加载即用。
+
+### 一次配置，到处使用
+
+```powershell
+# 在你自己的电脑上（克隆好仓库后），运行：
+.\make-portable.ps1
+# 按提示输入 DeepSeek key + 欧陆 token
+# 生成 context-vocab-portable.zip（约 25 KB）
+```
+
+### 在公用电脑上
+
+1. 把 zip 拷到优盘 / 微信文件传输助手 / 自己邮箱里收一份
+2. 在公用电脑上解压（任意位置都行）
+3. Chrome 打开 `chrome://extensions` → 开启**开发者模式** → **加载已解压的扩展程序** → 选解压出来的 `context-vocab` 文件夹
+4. **直接划词查词**——key 会在扩展安装时从 `preset.json` 自动写入 `chrome.storage.local`
+
+### 用完后
+
+`chrome://extensions` → 找到 Context Vocab → 点**移除**。Chrome 会一并清掉 `chrome.storage.local` 里的 key，不会留痕在公用电脑上。
+
+### ⚠️ 安全须知
+
+- 生成的 zip **明文包含你的 API key**——拿到这个 zip 的人能用你的账号
+- 不要把 zip 上传到 GitHub / 公开网盘 / 大群聊（仓库 `.gitignore` 已经默认把它屏蔽，不会被你不小心 push 上来）
+- 别人电脑借给你用？用完一定要去 `chrome://extensions` 移除扩展
+- DeepSeek 控制台和欧陆 OpenAPI 都有调用记录可以查——发现异常调用可以立即在原网站撤销 key 并重新生成
+
+### 工作原理（给好奇的）
+
+- `src/preset.json` 在仓库里是空的，提交到 git 也无害
+- `make-portable.ps1` 在系统 TEMP 目录里 **临时复制一份** 文件树，把 key 塞进副本的 `preset.json`，打包，删除临时副本——你的工作树 `preset.json` 全程没被动过
+- service worker 在 `onInstalled` 和 `onStartup` 时读 `preset.json`，**只在对应字段还没设置过时** 写入 storage（手动改的 key 永远胜出）
+
+---
+
 ## 安装（开发者模式）
 
 1. 克隆这个仓库：

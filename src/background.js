@@ -5,6 +5,36 @@ const DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
 const EUDIC_BASE = "https://api.frdic.com/api/open/v1";
 const EUDIC_NOTE_MAX = 900; // keep note text well below any plausible cap
 
+// ---------- Portable mode preset ----------
+// On install/startup, read src/preset.json. If any field is non-empty AND the
+// corresponding storage key is unset, populate it. Existing user-set keys are
+// never overwritten — so a manually entered key on this browser wins.
+async function applyPresetIfPresent() {
+  let preset;
+  try {
+    const res = await fetch(chrome.runtime.getURL("src/preset.json"));
+    if (!res.ok) return;
+    preset = await res.json();
+  } catch (_) {
+    return;
+  }
+  if (!preset) return;
+  const presetDs = (preset.deepseek_key || "").trim();
+  const presetEu = (preset.eudic_token || "").trim();
+  if (!presetDs && !presetEu) return;
+
+  const stored = await chrome.storage.local.get(["deepseek_key", "eudic_token"]);
+  const updates = {};
+  if (presetDs && !stored.deepseek_key) updates.deepseek_key = presetDs;
+  if (presetEu && !stored.eudic_token) updates.eudic_token = presetEu;
+  if (Object.keys(updates).length) {
+    await chrome.storage.local.set(updates);
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => { applyPresetIfPresent(); });
+chrome.runtime.onStartup.addListener(() => { applyPresetIfPresent(); });
+
 const SYSTEM_PROMPT =
   "你是一个为中国英语学习者服务的词汇解释助手。" +
   "用户会给你一个在网页中选中的英文单词或短语，以及它前后约 300 字的英文上下文。" +
