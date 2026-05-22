@@ -52,19 +52,45 @@ AI 看到上下文后告诉你：
 
 ### 一次配置，到处使用
 
+最简单的方式：**双击 `make-portable.cmd`**，按向导一步步来：
+
+```
+1. 输入 DeepSeek API Key
+2. 输入欧陆 OpenAPI Token
+3. 选择是否加密
+   - 不加密 → 生成 context-vocab-portable.zip（约 23 KB）
+   - 加密   → 生成 context-vocab-portable.7z（约 17 KB，AES-256，文件名也藏起来）
+4. 如选加密 → 设置一个解压密码（输两次，至少 4 位）
+```
+
+也可以走 PowerShell：
+
 ```powershell
-# 在你自己的电脑上（克隆好仓库后），运行：
+# 默认（不加密）
 .\make-portable.ps1
-# 按提示输入 DeepSeek key + 欧陆 token
-# 生成 context-vocab-portable.zip（约 25 KB）
+
+# 直接加密版
+.\make-portable.ps1 -Encrypt
+
+# 完全非交互（可以塞到批处理里跑）
+.\make-portable.ps1 -DeepSeekKey "sk-xxx" -EudicToken "yyy" -Encrypt -Password "我的密码"
 ```
 
 ### 在公用电脑上
 
+**没加密（.zip）：**
 1. 把 zip 拷到优盘 / 微信文件传输助手 / 自己邮箱里收一份
-2. 在公用电脑上解压（任意位置都行）
+2. 在公用电脑上解压（双击或右键都行）
 3. Chrome 打开 `chrome://extensions` → 开启**开发者模式** → **加载已解压的扩展程序** → 选解压出来的 `context-vocab` 文件夹
 4. **直接划词查词**——key 会在扩展安装时从 `preset.json` 自动写入 `chrome.storage.local`
+
+**加密版（.7z）：**
+1. 把 .7z 拷到目标电脑
+2. 目标电脑需要装 7-Zip（[www.7-zip.org](https://www.7-zip.org/)，2 MB，30 秒装完）
+3. 右键 .7z → 7-Zip → 解压到此处 → **输入密码**
+4. 后面同上（chrome://extensions → 加载已解压 → 选 context-vocab 文件夹）
+
+> 公用电脑上没装 7-Zip 也别怕，国内电脑大多装了 WinRAR/Bandizip，这俩也能识别 AES-256 加密的 .7z。
 
 ### 用完后
 
@@ -72,9 +98,10 @@ AI 看到上下文后告诉你：
 
 ### ⚠️ 安全须知
 
-- 生成的 zip **明文包含你的 API key**——拿到这个 zip 的人能用你的账号
-- 不要把 zip 上传到 GitHub / 公开网盘 / 大群聊（仓库 `.gitignore` 已经默认把它屏蔽，不会被你不小心 push 上来）
-- 别人电脑借给你用？用完一定要去 `chrome://extensions` 移除扩展
+- **没加密的 zip 明文包含 API key**——拿到这个 zip 的人能用你的账号。优盘 / 私聊 / 自己邮箱传可以；GitHub / 公开网盘 / 大群聊不要发
+- **加密 .7z 用的是 AES-256 + 文件名隐藏**——没密码连里面有什么文件都看不到，比 ZIP 自带的 ZipCrypto 强得多。但密码安全完全取决于你设的密码强度，所以别用 `123456`
+- 仓库 `.gitignore` 默认屏蔽了 `*.portable.zip` 和 `*.portable.7z`，不会被你不小心 `git push` 上来
+- 别人电脑借给你用？用完一定要去 `chrome://extensions` 移除扩展（同时清掉 `chrome.storage.local`）；解压出来的 `context-vocab/` 文件夹也顺手删掉
 - DeepSeek 控制台和欧陆 OpenAPI 都有调用记录可以查——发现异常调用可以立即在原网站撤销 key 并重新生成
 
 ### 工作原理（给好奇的）
