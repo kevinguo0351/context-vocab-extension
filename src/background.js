@@ -43,8 +43,11 @@ const SYSTEM_PROMPT =
   "- in_context：**结合上下文**展开解释——为什么在这一段里就是这个意思，引用上下文里的关键词，2–3 句话。这是和字典释义最大的区别。\n" +
   "- type：词性或类别，例如「名词」「专有名词 · 高速公路名」「短语动词」。\n" +
   "- note：一个对记忆有帮助的小知识——词源、构词法、易混词、地道用法、文化背景等，1 句话。\n" +
-  "尤其注意缩写、专有名词、俚语、双关、比喻用法。" +
-  "回复必须是合法的 JSON，不要包含 markdown 代码块、不要任何额外文字。所有字段值都用简体中文。";
+  "尤其注意缩写、专有名词、俚语、双关、比喻用法。\n" +
+  "**输出格式硬性规定**：\n" +
+  "- 必须是合法 JSON，且只输出 JSON 本身，不要 markdown 代码块、不要任何说明文字。\n" +
+  "- 所有字段值都用简体中文。\n" +
+  "- 在 JSON 字符串值的内部，如果需要引用原文里的英文词组或短语，请用中文全角引号「」 或 \" \"（U+201C / U+201D），**绝对不要在字符串值内放未转义的英文双引号**（这会破坏 JSON）。";
 
 // ---------- Storage helpers ----------
 
@@ -69,17 +72,60 @@ async function appendWordLog(entry) {
 
 // ---------- JSON parsing ----------
 
+// Parse the model's reply into our 4-field shape. Order of attempts:
+//   1. Strict JSON.parse on the raw string (will succeed when response_format
+//      is honored — the common case).
+//   2. Strip markdown code fences and try again.
+//   3. Extract the first {...} block and try again.
+//   4. Convert smart quotes to straight, last-resort JSON.parse.
+//   5. Lenient per-field regex extraction so even broken JSON populates the
+//      panel correctly. We never dump the entire raw response into `meaning`.
 function parseModelJson(raw) {
   if (!raw) return { meaning: "" };
-  let s = String(raw).trim();
-  s = s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+  const original = String(raw);
+  const tryParse = (s) => { try { return JSON.parse(s); } catch (_) { return null; } };
+
+  let s = original.trim();
+  let parsed = tryParse(s);
+  if (parsed && typeof parsed === "object") return parsed;
+
   s = s.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
-  try { return JSON.parse(s); } catch (_) {}
+  parsed = tryParse(s);
+  if (parsed && typeof parsed === "object") return parsed;
+
   const match = s.match(/\{[\s\S]*\}/);
   if (match) {
-    try { return JSON.parse(match[0]); } catch (_) {}
+    parsed = tryParse(match[0]);
+    if (parsed && typeof parsed === "object") return parsed;
   }
-  return { meaning: raw };
+
+  const sFixed = s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+  parsed = tryParse(sFixed);
+  if (parsed && typeof parsed === "object") return parsed;
+  const matchFixed = sFixed.match(/\{[\s\S]*\}/);
+  if (matchFixed) {
+    parsed = tryParse(matchFixed[0]);
+    if (parsed && typeof parsed === "object") return parsed;
+  }
+
+  // Lenient per-field extraction. For each known field, capture content
+  // greedily up to the next field key or the closing brace. Tolerates
+  // unescaped quotes inside the value as long as the next-field marker
+  // doesn't appear inside it.
+  const fields = ["meaning", "in_context", "type", "note"];
+  const out = {};
+  for (const f of fields) {
+    const re = new RegExp(
+      `"${f}"\\s*:\\s*"([\\s\\S]*?)"\\s*(?=,\\s*"(?:meaning|in_context|type|note)"\\s*:|\\s*\\}\\s*$)`,
+      "u"
+    );
+    const m = original.match(re);
+    if (m) out[f] = m[1].replace(/\\"/g, '"').replace(/\\n/g, "\n").trim();
+  }
+  if (out.meaning || out.in_context) return out;
+
+  // Truly nothing usable. Show a clear error rather than dumping JSON.
+  return { meaning: "（解析模型回复失败，请重试一次）" };
 }
 
 // ---------- DeepSeek ----------
@@ -118,6 +164,10 @@ async function callDeepSeek({ word, context, url }) {
         model: "deepseek-v4-flash",
         max_tokens: 500,
         temperature: 0.3,
+        // Force valid JSON output — eliminates the "model emits unescaped
+        // double quotes inside a string value" failure mode that was
+        // dumping raw JSON into the panel.
+        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userMessage }
