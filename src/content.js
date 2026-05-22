@@ -310,6 +310,7 @@
       if (resp?.ok) {
         btn.textContent = "✓ 已存入欧陆";
         btn.classList.add("ctxvocab-saved");
+        if (resp.warning) setStatus(panel, resp.warning, "error");
       } else if (resp?.code === "NO_TOKEN") {
         btn.textContent = "⚠ 请在设置里填欧陆 token";
         btn.disabled = false;

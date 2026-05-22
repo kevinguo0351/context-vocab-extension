@@ -3,7 +3,7 @@
 
 const DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
 const EUDIC_BASE = "https://api.frdic.com/api/open/v1";
-const EUDIC_NOTE_MAX = 900; // keep context_line well below any plausible cap
+const EUDIC_NOTE_MAX = 900; // keep note text well below any plausible cap
 
 const SYSTEM_PROMPT =
   "你是一个为中国英语学习者服务的词汇解释助手。" +
@@ -104,9 +104,14 @@ async function callDeepSeek({ word, context, url }) {
 
 // ---------- Eudic OpenAPI ----------
 // Auth: raw token (NO "Bearer" prefix). Some accounts need "NIS <token>".
-// Endpoint for word + note: POST /studylist/word (singular) with `context_line`.
+// Two-step save:
+//   1) POST /studylist/word   { language, word, category_ids: [0] }
+//   2) POST /studylist/note   { language, word, note }
+// Verified against multiple production clients (saladict, STranslate, LuLuDictOperator,
+// llm-vocabulary-reminder, paw, lingo-link). The `note` field is what shows as the
+// per-word "释义/笔记" inside the Eudic mobile app.
 
-function buildContextLine(payload) {
+function buildNoteText(payload) {
   const parts = [];
   if (payload.in_context) parts.push(`【此处含义】${payload.in_context}`);
   if (payload.meaning && payload.meaning !== payload.in_context) {
@@ -123,20 +128,14 @@ function buildContextLine(payload) {
   return text;
 }
 
-async function eudicAddSingleWord(token, word, contextLine) {
-  const body = JSON.stringify({
-    language: "en",
-    word,
-    context_line: contextLine,
-    category_ids: [0]
-  });
-
-  // Try raw token first; if 401, retry with "NIS " prefix that some Eudic accounts require.
+// Try the call with raw token first; on 401/403 retry with "NIS <token>" (some
+// older Eudic accounts copy the token with a "NIS " prefix from the dashboard).
+async function eudicFetch(token, path, body) {
   const headerVariants = [token, `NIS ${token}`];
   let lastError = "";
   for (const auth of headerVariants) {
     try {
-      const res = await fetch(`${EUDIC_BASE}/studylist/word`, {
+      const res = await fetch(`${EUDIC_BASE}${path}`, {
         method: "POST",
         headers: {
           Authorization: auth,
@@ -147,7 +146,6 @@ async function eudicAddSingleWord(token, word, contextLine) {
       if (res.ok) return { ok: true };
       const text = await res.text().catch(() => "");
       lastError = `Eudic ${res.status}: ${text.slice(0, 200)}`;
-      // Only retry on 401/403 (auth-related). Other errors: bail.
       if (res.status !== 401 && res.status !== 403) break;
     } catch (err) {
       lastError = `网络错误: ${err.message}`;
@@ -156,52 +154,36 @@ async function eudicAddSingleWord(token, word, contextLine) {
   return { ok: false, error: lastError || "Eudic 请求失败。" };
 }
 
-// Fallback for accounts where /studylist/word (singular) isn't supported:
-// add the bare word via the batch endpoint. Note: this loses the context_line.
-async function eudicAddWordBatch(token, word) {
-  const body = JSON.stringify({
-    language: "en",
-    category_id: "0",
-    words: [word]
-  });
-  const headerVariants = [token, `NIS ${token}`];
-  for (const auth of headerVariants) {
-    try {
-      const res = await fetch(`${EUDIC_BASE}/studylist/words`, {
-        method: "POST",
-        headers: { Authorization: auth, "Content-Type": "application/json" },
-        body
-      });
-      if (res.ok) return { ok: true, fallback: true };
-      if (res.status !== 401 && res.status !== 403) {
-        const text = await res.text().catch(() => "");
-        return { ok: false, error: `Eudic ${res.status}: ${text.slice(0, 200)}` };
-      }
-    } catch (err) {
-      return { ok: false, error: `网络错误: ${err.message}` };
-    }
-  }
-  return { ok: false, error: "Eudic 鉴权失败（401）。请检查 token 是否正确。" };
-}
-
 async function saveWord(payload) {
   const { eudic_token } = await getSettings();
   if (!eudic_token) {
     return { ok: false, code: "NO_TOKEN", error: "未设置欧陆 token。" };
   }
 
-  const contextLine = buildContextLine(payload);
+  // Step 1: add the word to the default 生词本.
+  const wordBody = JSON.stringify({
+    language: "en",
+    word: payload.word,
+    category_ids: [0]
+  });
+  const addResult = await eudicFetch(eudic_token, "/studylist/word", wordBody);
+  if (!addResult.ok) return addResult;
 
-  // Primary: singular endpoint with context_line (the note).
-  let result = await eudicAddSingleWord(eudic_token, payload.word, contextLine);
-
-  // Fallback: if singular endpoint not supported (404) or another non-auth error,
-  // at least save the word itself.
-  if (!result.ok && /Eudic 404/.test(result.error || "")) {
-    result = await eudicAddWordBatch(eudic_token, payload.word);
+  // Step 2: attach the note. Failure here is non-fatal — the word is in;
+  // we just report the partial-success so the user can retry the note later.
+  const noteText = buildNoteText(payload);
+  let noteWarning = null;
+  if (noteText) {
+    const noteBody = JSON.stringify({
+      language: "en",
+      word: payload.word,
+      note: noteText
+    });
+    const noteResult = await eudicFetch(eudic_token, "/studylist/note", noteBody);
+    if (!noteResult.ok) {
+      noteWarning = `单词已存入，但笔记写入失败：${noteResult.error}`;
+    }
   }
-
-  if (!result.ok) return result;
 
   await appendWordLog({
     word: payload.word,
@@ -215,7 +197,7 @@ async function saveWord(payload) {
     saved_at: payload.saved_at
   });
 
-  return { ok: true, fallback: !!result.fallback };
+  return { ok: true, warning: noteWarning };
 }
 
 // ---------- Message router ----------
