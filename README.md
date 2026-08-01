@@ -1,4 +1,7 @@
 # Context Vocab · 带语境的欧陆生词助手
+上线chrome商店了！ 
+https://chromewebstore.google.com/detail/context-vocab/dhcdkpkphhkjiaogdpdcfjlanklfdkal
+也可以选择在release里面下载!
 
 > 一个 Chrome 插件：在网上看新闻、看文章时，划词 → AI 用语境解释 → 一键存进欧陆词典，**连同原句一起存**。
 
